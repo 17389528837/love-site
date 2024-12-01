@@ -747,7 +747,7 @@
                     // 显示加载状态
                     musicTitle.textContent = '加载中...';
                     
-                    // 停止当前播放��乐
+                    // 停止当前播放乐
                     if (bgMusic.src) {
                         bgMusic.pause();
                     }
@@ -885,254 +885,10 @@
                 });
             });
 
-            // 默认音乐列表
-            const defaultMusic = [
-                { src: '/love-site/music/This Could Be You.mp3', name: 'This Could Be You' },
-            ];
-
-            // 修改 scanMusicFolder 函数
-            async function scanMusicFolder() {
-                try {
-                    const response = await fetch('/love-site/backend/music/');
-                    if (!response.ok) {
-                        throw new Error('Failed to load music directory');
-                    }
-                    
-                    const text = await response.text();
-                    let files;
-                    try {
-                        files = JSON.parse(text);
-                    } catch (e) {
-                        console.error('JSON parse error:', e, 'Response text:', text);
-                        throw new Error('Invalid JSON response');
-                    }
-                    
-                    if (Array.isArray(files)) {
-                        updateMusicList(files.map(file => ({
-                            src: `/love-site/backend/music/${encodeURIComponent(file)}`,
-                            name: file.replace('.mp3', '')
-                        })));
-                    } else {
-                        throw new Error('Invalid response format');
-                    }
-                } catch (error) {
-                    console.error('Error loading music directory:', error);
-                    // 使用默认音乐列表
-                    updateMusicList(defaultMusic);
-                }
-            }
-
-            // 添加更新音乐列表的函数
-            function updateMusicList(musicList) {
-                const musicListElement = document.querySelector('.music-list');
-                musicListElement.innerHTML = '';
-                
-                musicList.forEach((music, index) => {
-                    const musicItem = document.createElement('div');
-                    musicItem.className = 'music-item' + (index === 0 ? ' active' : '');
-                    musicItem.dataset.src = music.src;
-                    musicItem.textContent = music.name;
-                    musicListElement.appendChild(musicItem);
-                });
-
-                // 设置默认音乐
-                if (musicList.length > 0) {
-                    bgMusic.src = musicList[0].src;
-                    musicTitle.textContent = musicList[0].name;
-                }
-
-                // 重新绑定音乐项的点击事件
-                bindMusicItemEvents();
-            }
-
-            // 绑定音乐项点击事件的函数
-            function bindMusicItemEvents() {
-                const musicItems = document.querySelectorAll('.music-item');
-                musicItems.forEach(item => {
-                    item.addEventListener('click', function() {
-                        const src = this.dataset.src;
-                        const title = this.textContent;
-                        
-                        // 更新音乐源
-                        bgMusic.src = src;
-                        musicTitle.textContent = title;
-                        
-                        // 更新激活状态
-                        musicItems.forEach(i => i.classList.remove('active'));
-                        this.classList.add('active');
-                        
-                        // 播放新音乐
-                        if (isPlaying) {
-                            bgMusic.play().catch(error => {
-                                console.log('播放失败:', error);
-                            });
-                        }
-                        
-                        // 关闭音乐列表
-                        musicList.classList.remove('show');
-                    });
-                });
-            }
-
-            // 在页面加载时扫描音乐文件夹
-            window.addEventListener('load', function() {
-                // 扫描音乐文件夹
-                scanMusicFolder();
-                
-                // 其他现有的 load 事件处理保持不变...
-            });
-
-            // 定义照片数组
-            let photos = [
-                '/love-site/picture/1.jpg',
-                '/love-site/picture/2.png',
-                '/love-site/picture/3.jpg'
-            ];
-
-            // 添加扫描图片文件夹的函数
-            async function scanPictureFolder() {
-                try {
-                    const response = await fetch('/love-site/backend/picture/');
-                    if (!response.ok) throw new Error('Failed to load picture directory');
-                    
-                    const files = await response.json();
-                    photos = files.map(file => `/love-site/backend/picture/${file}`);
-                    
-                    if (photos.length === 0) {
-                        // 如果没有找到图片，使用默认图片
-                        photos = [
-                            '/love-site/picture/1.jpg',
-                            '/love-site/picture/2.png',
-                            '/love-site/picture/3.jpg'
-                        ];
-                    }
-                } catch (error) {
-                    console.error('Error loading pictures:', error);
-                    // 出错时使用默认图片
-                    photos = [
-                        '/love-site/picture/1.jpg',
-                        '/love-site/picture/2.png',
-                        '/love-site/picture/3.jpg'
-                    ];
-                }
-            }
-
-            // 在页面加载时扫描图片
-            window.addEventListener('DOMContentLoaded', async function() {
-                await scanPictureFolder();
-                // ... 其他初始化代码
-            });
-
-            // 创建相框函数
-            function createPhotoFrame() {
-                const frame = document.createElement('div');
-                frame.className = 'photo-frame';
-                
-                // 创建图片元素
-                const img = document.createElement('img');
-                img.src = photos[Math.floor(Math.random() * photos.length)];
-                frame.appendChild(img);
-                
-                // 随机位置
-                const x = Math.random() * (window.innerWidth - 300) + 50;
-                const y = Math.random() * (window.innerHeight - 350) + 50;
-                frame.style.left = x + 'px';
-                frame.style.top = y + 'px';
-                
-                // 随机旋转角度
-                const rotation = Math.random() * 30 - 15;
-                frame.style.transform = `rotate(${rotation}deg)`;
-                
-                document.body.appendChild(frame);
-                
-                // 添加出现动画
-                frame.animate([
-                    { 
-                        transform: `translate(0, 50px) rotate(${rotation}deg)`,
-                        opacity: 0 
-                    },
-                    { 
-                        transform: `translate(0, 0) rotate(${rotation}deg)`,
-                        opacity: 1 
-                    }
-                ], {
-                    duration: 1000,
-                    easing: 'ease-out',
-                    fill: 'forwards'
-                });
-
-                // 添加点击事件（可以放大查看）
-                frame.addEventListener('click', function() {
-                    this.style.zIndex = '1000';
-                    const currentTransform = this.style.transform;
-                    
-                    this.animate([
-                        { transform: currentTransform },
-                        { transform: 'translate(-50%, -50%) scale(2) rotate(0deg)' }
-                    ], {
-                        duration: 500,
-                        easing: 'ease-out',
-                        fill: 'forwards'
-                    });
-
-                    // 点击其他地方恢复
-                    const closeHandler = function(e) {
-                        if (!frame.contains(e.target)) {
-                            frame.style.zIndex = '48';
-                            frame.animate([
-                                { transform: 'translate(-50%, -50%) scale(2) rotate(0deg)' },
-                                { transform: currentTransform }
-                            ], {
-                                duration: 500,
-                                easing: 'ease-out',
-                                fill: 'forwards'
-                            });
-                            document.removeEventListener('click', closeHandler);
-                        }
-                    };
-                    
-                    document.addEventListener('click', closeHandler);
-                });
-            }
-
-            // 修改 startAllAnimations 函数，添加相框创建
-            function startAllAnimations() {
-                // 开始播放默认音乐
-                if (defaultMusic.length > 0) {
-                    bgMusic.src = defaultMusic[0].src;
-                    musicTitle.textContent = defaultMusic[0].name;
-                    bgMusic.play().catch(function(error) {
-                        console.log('自动播放失败，需要用户交互:', error);
-                    });
-                    isPlaying = true;
-                    document.querySelector('.music-icon')?.classList.remove('paused');
-                }
-
-                // 开始文字动画
-                setInterval(() => {
-                    const count = Math.floor(Math.random() * 2) + 1;
-                    for(let i = 0; i < count; i++) {
-                        setTimeout(createFloatingWord, i * 100);
-                    }
-                }, 1000);
-
-                // 初始创建一批文字
-                for(let i = 0; i < 15; i++) {
-                    setTimeout(() => {
-                        createFloatingWord();
-                    }, i * 150);
-                }
-
-                // 开始爱心动画
-                startBigHeartInterval();
-
-                // 扫描音乐文件夹
-                scanMusicFolder();
-            }
-
             const config = {
                 version: '1.0.0',
-                baseUrl: '/love-site',
+                // 使用 jsDelivr CDN
+                baseUrl: 'https://cdn.jsdelivr.net/gh/17389528837/love-site@main',
                 paths: {
                     music: '/music',
                     picture: '/picture'
@@ -1142,36 +898,25 @@
                 }
             };
 
-            // 然后在代码中使用
-            const musicPath = config.getPath('music', 'bgm.mp3');
-            const picturePath = config.getPath('picture', 'photo1.jpg');
+            // 修改默认音乐列表
+            const defaultMusic = [
+                { 
+                    src: config.getPath('music', 'This Could Be You.mp3'), 
+                    name: 'This Could Be You' 
+                }
+            ];
 
-            const musicSrc = `/love-site/music/${encodeURIComponent('This Could Be You.mp3')}`;
+            // 修改默认图片数组
+            let photos = [
+                config.getPath('picture', '1.jpg'),
+                config.getPath('picture', '2.png'),
+                config.getPath('picture', '3.jpg')
+            ];
 
-            function checkResources() {
-                // 检查音乐文件
-                fetch(config.getPath('music', 'This Could Be You.mp3'))
-                    .then(response => {
-                        if (!response.ok) throw new Error('Music file not found');
-                        console.log('Music file loaded successfully');
-                    })
-                    .catch(error => console.error('Music file error:', error));
-
-                // 检查图片文件
-                ['1.jpg', '2.png'].forEach(img => {
-                    fetch(config.getPath('picture', img))
-                        .then(response => {
-                            if (!response.ok) throw new Error(`Image ${img} not found`);
-                            console.log(`Image ${img} loaded successfully`);
-                        })
-                        .catch(error => console.error(`Image ${img} error:`, error));
-                });
-            }
-
-            // 添加到你的 JavaScript 代码中
+            // 修改音频测试代码
             window.addEventListener('load', function() {
                 // 测试音乐文件
-                const audio = new Audio(`/love-site/music/${encodeURIComponent('This Could Be You.mp3')}`);
+                const audio = new Audio(config.getPath('music', 'This Could Be You.mp3'));
                 audio.addEventListener('error', function() {
                     console.error('音乐文件加载失败');
                 });
@@ -1182,7 +927,7 @@
                 // 测试图片文件
                 ['1.jpg', '2.png'].forEach(img => {
                     const image = new Image();
-                    image.src = `/love-site/picture/${img}`;
+                    image.src = config.getPath('picture', img);
                     image.onload = () => console.log(`图片 ${img} 加载成功`);
                     image.onerror = () => console.error(`图片 ${img} 加载失败`);
                 });
