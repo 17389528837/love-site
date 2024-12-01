@@ -434,19 +434,18 @@
             <div class="music-title">点击切换音乐</div>
             <div class="music-list">
               
-                <div class="music-item active" data-src="/love-site/music/This Could Be You.mp3">This Could Be You</div>
+                <div class="music-item active" data-src="https://cdn.jsdelivr.net/gh/17389528837/love-site@main/music/This Could Be You.mp3">This Could Be You</div>
       
             </div>
         </div>
         <audio id="bgMusic" loop>
-            <source src="/love-site/music/This Could Be You.mp3" type="audio/mpeg">
+            <source src="https://cdn.jsdelivr.net/gh/17389528837/love-site@main/music/This Could Be You.mp3" type="audio/mpeg">
         </audio>
 
         <script>
             // 在 script 开始处添加资源配置
             const resourceConfig = {
                 version: '1.0.0',
-                // 使用 jsDelivr CDN
                 baseUrl: 'https://cdn.jsdelivr.net/gh/17389528837/love-site@main',
                 resources: {
                     music: {
@@ -929,7 +928,7 @@
                     musicIcon.classList.add('paused');
                 } else if (!document.hidden && isPlaying) {
                     bgMusic.play().catch(function(error) {
-                        console.log('自动播放失败');
+                        console.log('自动播放败');
                     });
                     musicIcon.classList.remove('paused');
                 }
