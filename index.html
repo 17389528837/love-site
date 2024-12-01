@@ -1157,7 +1157,7 @@
                     .catch(error => console.error('Music file error:', error));
 
                 // 检查图片文件
-                ['1.jpg', '2.jpg'].forEach(img => {
+                ['1.jpg', '2.png'].forEach(img => {
                     fetch(`/love-site/picture/${img}`)
                         .then(response => {
                             if (!response.ok) throw new Error(`Image ${img} not found`);
@@ -1179,7 +1179,7 @@
                 });
 
                 // 测试图片文件
-                ['1.jpg', '2.jpg'].forEach(img => {
+                ['1.jpg', '2.png'].forEach(img => {
                     const image = new Image();
                     image.src = `/love-site/picture/${img}`;
                     image.onload = () => console.log(`图片 ${img} 加载成功`);
