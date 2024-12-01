@@ -547,7 +547,7 @@
                 }, duration * 1000);
             }
 
-            // 修改创建烟花效果的函数，添加相框显示
+            // 修改创建烟花效果的函数，添加相框显
             function createFirework(x, y, size) {
                 const colors = [
                     '#ff4d4d', '#ff6b6b', '#ff8787', 
@@ -823,7 +823,7 @@
 
             // 页面加载后开始信封飞入动画
             window.addEventListener('load', function() {
-                // 短暂延迟后开始飞入动画
+                // 短暂延迟后开始入动画
                 setTimeout(() => {
                     envelope.classList.add('flying');
                 }, 500);
@@ -887,7 +887,7 @@
 
             // 默认音乐列表
             const defaultMusic = [
-                { src: '/love-site/music/bgm.mp3', name: 'This Could Be You' },
+                { src: '/love-site/music/This Could Be You.mp3', name: 'This Could Be You' },
             ];
 
             // 修改 scanMusicFolder 函数
@@ -997,18 +997,16 @@
                     if (photos.length === 0) {
                         // 如果没有找到图片，使用默认图片
                         photos = [
-                            '/love-site/music/1.jpg',
-                            '/love-site/music/2.jpg',
-                            '/love-site/music/3.jpg'
+                            '/love-site/pictures/1.jpg',
+                            '/love-site/pictures/2.jpg'
                         ];
                     }
                 } catch (error) {
                     console.error('Error loading pictures:', error);
                     // 出错时使用默认图片
                     photos = [
-                        '/love-site/music/1.jpg',
-                        '/love-site/music/2.jpg',
-                        '/love-site/music/3.jpg'
+                        '/love-site/pictures/1.jpg',
+                        '/love-site/pictures/2.jpg'
                     ];
                 }
             }
@@ -1140,6 +1138,31 @@
             // 然后在代码中使用
             const musicPath = config.getPath('music', 'bgm.mp3');
             const picturePath = config.getPath('pictures', 'photo1.jpg');
+
+            const musicSrc = `/love-site/music/${encodeURIComponent('This Could Be You.mp3')}`;
+
+            function checkResources() {
+                // 检查音乐文件
+                fetch('/love-site/music/This Could Be You.mp3')
+                    .then(response => {
+                        if (!response.ok) throw new Error('Music file not found');
+                        console.log('Music file loaded successfully');
+                    })
+                    .catch(error => console.error('Music file error:', error));
+
+                // 检查图片文件
+                ['1.jpg', '2.jpg'].forEach(img => {
+                    fetch(`/love-site/pictures/${img}`)
+                        .then(response => {
+                            if (!response.ok) throw new Error(`Image ${img} not found`);
+                            console.log(`Image ${img} loaded successfully`);
+                        })
+                        .catch(error => console.error(`Image ${img} error:`, error));
+                });
+            }
+
+            // 页面加载时检查资源
+            window.addEventListener('load', checkResources);
         </script>
     </div>
 </body>
