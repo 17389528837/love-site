@@ -747,7 +747,7 @@
                     // 显示加载状态
                     musicTitle.textContent = '加载中...';
                     
-                    // 停止当前播放的乐
+                    // 停止当前播放��乐
                     if (bgMusic.src) {
                         bgMusic.pause();
                     }
@@ -1131,13 +1131,14 @@
             }
 
             const config = {
+                version: '1.0.0',
                 baseUrl: '/love-site',
                 paths: {
                     music: '/music',
                     picture: '/picture'
                 },
                 getPath: function(type, filename) {
-                    return `${this.baseUrl}${this.paths[type]}/${filename}`;
+                    return `${this.baseUrl}${this.paths[type]}/${filename}?v=${this.version}`;
                 }
             };
 
@@ -1149,7 +1150,7 @@
 
             function checkResources() {
                 // 检查音乐文件
-                fetch('/love-site/music/This Could Be You.mp3')
+                fetch(config.getPath('music', 'This Could Be You.mp3'))
                     .then(response => {
                         if (!response.ok) throw new Error('Music file not found');
                         console.log('Music file loaded successfully');
@@ -1158,7 +1159,7 @@
 
                 // 检查图片文件
                 ['1.jpg', '2.png'].forEach(img => {
-                    fetch(`/love-site/picture/${img}`)
+                    fetch(config.getPath('picture', img))
                         .then(response => {
                             if (!response.ok) throw new Error(`Image ${img} not found`);
                             console.log(`Image ${img} loaded successfully`);
