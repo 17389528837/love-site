@@ -434,12 +434,12 @@
             <div class="music-title">点击切换音乐</div>
             <div class="music-list">
               
-                <div class="music-item active" data-src="./music/bgm.mp3">This Could Be You</div>
+                <div class="music-item active" data-src="/love-site/music/This Could Be You.mp3">This Could Be You</div>
       
             </div>
         </div>
         <audio id="bgMusic" loop>
-            <source src="./music/bgm.mp3" type="audio/mpeg">
+            <source src="/love-site/music/This Could Be You.mp3" type="audio/mpeg">
         </audio>
 
         <script>
@@ -447,7 +447,6 @@
                 '邹昕瑶',
                 '我爱你',
                 '喜欢你',
-                '猪宝宝',
                 '宝贝',
                 '亲爱的',
                 '最爱你',
@@ -888,13 +887,13 @@
 
             // 默认音乐列表
             const defaultMusic = [
-                { src: './music/bgm.mp3', name: 'This Could Be You' },
+                { src: '/love-site/music/bgm.mp3', name: 'This Could Be You' },
             ];
 
             // 修改 scanMusicFolder 函数
             async function scanMusicFolder() {
                 try {
-                    const response = await fetch('http://localhost:5000/backend/music/');
+                    const response = await fetch('/love-site/backend/music/');
                     if (!response.ok) {
                         throw new Error('Failed to load music directory');
                     }
@@ -910,7 +909,7 @@
                     
                     if (Array.isArray(files)) {
                         updateMusicList(files.map(file => ({
-                            src: `http://localhost:5000/backend/music/${encodeURIComponent(file)}`,
+                            src: `/love-site/backend/music/${encodeURIComponent(file)}`,
                             name: file.replace('.mp3', '')
                         })));
                     } else {
@@ -989,27 +988,27 @@
             // 添加扫描图片文件夹的函数
             async function scanPictureFolder() {
                 try {
-                    const response = await fetch('http://localhost:5000/backend/picture/');
+                    const response = await fetch('/love-site/backend/picture/');
                     if (!response.ok) throw new Error('Failed to load picture directory');
                     
                     const files = await response.json();
-                    photos = files.map(file => `http://localhost:5000/backend/picture/${file}`);
+                    photos = files.map(file => `/love-site/backend/picture/${file}`);
                     
                     if (photos.length === 0) {
                         // 如果没有找到图片，使用默认图片
                         photos = [
-                            './music/photo1.jpg',
-                            './music/photo2.jpg',
-                            './music/photo3.jpg'
+                            '/love-site/music/1.jpg',
+                            '/love-site/music/2.jpg',
+                            '/love-site/music/3.jpg'
                         ];
                     }
                 } catch (error) {
                     console.error('Error loading pictures:', error);
                     // 出错时使用默认图片
                     photos = [
-                        './music/photo1.jpg',
-                        './music/photo2.jpg',
-                        './music/photo3.jpg'
+                        '/love-site/music/1.jpg',
+                        '/love-site/music/2.jpg',
+                        '/love-site/music/3.jpg'
                     ];
                 }
             }
@@ -1126,6 +1125,21 @@
                 // 扫描音乐文件夹
                 scanMusicFolder();
             }
+
+            const config = {
+                baseUrl: '/love-site',
+                paths: {
+                    music: '/music',
+                    pictures: '/pictures'
+                },
+                getPath: function(type, filename) {
+                    return `${this.baseUrl}${this.paths[type]}/${filename}`;
+                }
+            };
+
+            // 然后在代码中使用
+            const musicPath = config.getPath('music', 'bgm.mp3');
+            const picturePath = config.getPath('pictures', 'photo1.jpg');
         </script>
     </div>
 </body>
