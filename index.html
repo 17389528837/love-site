@@ -1005,25 +1005,10 @@
                 });
             });
 
-            // 修改默认音乐列表
-            const defaultMusic = [
-                { 
-                    src: config.getPath('music', 'This Could Be You.mp3'), 
-                    name: 'This Could Be You' 
-                }
-            ];
-
-            // 修改默认图片数组
-            let photos = [
-                config.getPath('picture', '1.jpg'),
-                config.getPath('picture', '2.png'),
-                config.getPath('picture', '3.jpg')
-            ];
-
             // 修改音频测试代码
             window.addEventListener('load', function() {
                 // 测试音乐文件
-                const audio = new Audio(config.getPath('music', 'This Could Be You.mp3'));
+                const audio = new Audio(resourceConfig.getPath('music', 'This Could Be You'));
                 audio.addEventListener('error', function() {
                     console.error('音乐文件加载失败');
                 });
@@ -1034,7 +1019,7 @@
                 // 测试图片文件
                 ['1.jpg', '2.png'].forEach(img => {
                     const image = new Image();
-                    image.src = config.getPath('picture', img);
+                    image.src = resourceConfig.getPath('pictures', img);
                     image.onload = () => console.log(`图片 ${img} 加载成功`);
                     image.onerror = () => console.error(`图片 ${img} 加载失败`);
                 });
