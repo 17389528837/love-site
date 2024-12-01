@@ -443,6 +443,126 @@
         </audio>
 
         <script>
+            // 在 script 开始处添加资源配置
+            const resourceConfig = {
+                version: '1.0.0',
+                // 使用 jsDelivr CDN
+                baseUrl: 'https://cdn.jsdelivr.net/gh/17389528837/love-site@main',
+                resources: {
+                    music: {
+                        'This Could Be You': '/music/This Could Be You.mp3'
+                    },
+                    pictures: {
+                        photo1: '/picture/1.jpg',
+                        photo2: '/picture/2.png',
+                        photo3: '/picture/3.jpg'
+                    }
+                },
+                getPath: function(type, key) {
+                    const path = type === 'music' ? 
+                        this.resources.music[key] : 
+                        this.resources.pictures[key];
+                    return `${this.baseUrl}${path}?v=${this.version}`;
+                }
+            };
+
+            // 修改音乐相关代码
+            const defaultMusic = [
+                { 
+                    src: resourceConfig.getPath('music', 'This Could Be You'),
+                    name: 'This Could Be You' 
+                }
+            ];
+
+            // 修改图片数组
+            let photos = [
+                resourceConfig.getPath('pictures', 'photo1'),
+                resourceConfig.getPath('pictures', 'photo2'),
+                resourceConfig.getPath('pictures', 'photo3')
+            ];
+
+            // 修改资源预加载函数
+            function preloadResources() {
+                // 预加载音乐
+                Object.keys(resourceConfig.resources.music).forEach(key => {
+                    const audio = new Audio();
+                    audio.preload = 'auto';
+                    audio.src = resourceConfig.getPath('music', key);
+                    audio.addEventListener('loadeddata', () => {
+                        console.log(`音乐 ${key} 加载成功`);
+                    });
+                    audio.addEventListener('error', () => {
+                        console.error(`音乐 ${key} 加载失败`);
+                    });
+                });
+
+                // 预加载图片
+                Object.keys(resourceConfig.resources.pictures).forEach(key => {
+                    const img = new Image();
+                    img.src = resourceConfig.getPath('pictures', key);
+                    img.onload = () => console.log(`图片 ${key} 加载成功`);
+                    img.onerror = () => console.error(`图片 ${key} 加载失败`);
+                });
+            }
+
+            // 修改音乐切换函数
+            async function switchMusic(src, title) {
+                try {
+                    musicTitle.textContent = '加载中...';
+                    if (bgMusic.src) {
+                        bgMusic.pause();
+                    }
+
+                    // 确保使用带版本号的URL
+                    const musicSrc = src.includes('?v=') ? src : `${src}?v=${resourceConfig.version}`;
+                    await preloadMusic(musicSrc);
+                    
+                    bgMusic.src = musicSrc;
+                    musicTitle.textContent = title;
+                    
+                    if (isPlaying) {
+                        await bgMusic.play();
+                    }
+                } catch (error) {
+                    console.error('音乐加载失败:', error);
+                    musicTitle.textContent = '加载失败';
+                }
+            }
+
+            // 在页面加载时初始化
+            window.addEventListener('load', function() {
+                // 预加载所有资源
+                preloadResources();
+                
+                // 设置初始音乐
+                if (defaultMusic.length > 0) {
+                    const firstMusic = defaultMusic[0];
+                    bgMusic.src = firstMusic.src;
+                    musicTitle.textContent = firstMusic.name;
+                }
+            });
+
+            // 添加版本更新检查
+            async function checkVersion() {
+                try {
+                    const response = await fetch(`${resourceConfig.baseUrl}/version.txt?t=${Date.now()}`);
+                    if (response.ok) {
+                        const latestVersion = await response.text();
+                        if (latestVersion.trim() !== resourceConfig.version) {
+                            console.log('检测到新版本，正在更新资源...');
+                            resourceConfig.version = latestVersion.trim();
+                            // 重新加载资源
+                            preloadResources();
+                        }
+                    }
+                } catch (error) {
+                    console.error('版本检查失败:', error);
+                }
+            }
+
+            // 定期检查版本更新
+            setInterval(checkVersion, 5 * 60 * 1000); // 每5分钟检查一次
+
             const loveWords = [
                 '邹昕瑶',
                 '我爱你',
@@ -706,7 +826,7 @@
                 startBigHeartInterval();
             });
 
-            // 音乐控���关变量
+            // 音乐控关变量
             const musicControl = document.getElementById('music-control');
             const musicList = document.querySelector('.music-list');
             const musicTitle = document.querySelector('.music-title');
@@ -884,19 +1004,6 @@
                     document.removeEventListener('click', initAudio);
                 });
             });
-
-            const config = {
-                version: '1.0.0',
-                // 使用 jsDelivr CDN
-                baseUrl: 'https://cdn.jsdelivr.net/gh/17389528837/love-site@main',
-                paths: {
-                    music: '/music',
-                    picture: '/picture'
-                },
-                getPath: function(type, filename) {
-                    return `${this.baseUrl}${this.paths[type]}/${filename}?v=${this.version}`;
-                }
-            };
 
             // 修改默认音乐列表
             const defaultMusic = [
