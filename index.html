@@ -706,7 +706,7 @@
                 startBigHeartInterval();
             });
 
-            // 音乐控制相关变量
+            // 音乐控相关变量
             const musicControl = document.getElementById('music-control');
             const musicList = document.querySelector('.music-list');
             const musicTitle = document.querySelector('.music-title');
@@ -983,7 +983,11 @@
             });
 
             // 定义照片数组
-            let photos = []; // 改为全局变量
+            let photos = [
+                '/love-site/picture/1.jpg',
+                '/love-site/picture/2.jpg',
+                '/love-site/picture/3.jpg'
+            ];
 
             // 添加扫描图片文件夹的函数
             async function scanPictureFolder() {
@@ -997,16 +1001,18 @@
                     if (photos.length === 0) {
                         // 如果没有找到图片，使用默认图片
                         photos = [
-                            '/love-site/pictures/1.jpg',
-                            '/love-site/pictures/2.jpg'
+                            '/love-site/picture/1.jpg',
+                            '/love-site/picture/2.jpg',
+                            '/love-site/picture/3.jpg'
                         ];
                     }
                 } catch (error) {
                     console.error('Error loading pictures:', error);
                     // 出错时使用默认图片
                     photos = [
-                        '/love-site/pictures/1.jpg',
-                        '/love-site/pictures/2.jpg'
+                        '/love-site/picture/1.jpg',
+                        '/love-site/picture/2.jpg',
+                        '/love-site/picture/3.jpg'
                     ];
                 }
             }
@@ -1128,7 +1134,7 @@
                 baseUrl: '/love-site',
                 paths: {
                     music: '/music',
-                    pictures: '/pictures'
+                    picture: '/picture'
                 },
                 getPath: function(type, filename) {
                     return `${this.baseUrl}${this.paths[type]}/${filename}`;
@@ -1137,7 +1143,7 @@
 
             // 然后在代码中使用
             const musicPath = config.getPath('music', 'bgm.mp3');
-            const picturePath = config.getPath('pictures', 'photo1.jpg');
+            const picturePath = config.getPath('picture', 'photo1.jpg');
 
             const musicSrc = `/love-site/music/${encodeURIComponent('This Could Be You.mp3')}`;
 
@@ -1152,7 +1158,7 @@
 
                 // 检查图片文件
                 ['1.jpg', '2.jpg'].forEach(img => {
-                    fetch(`/love-site/pictures/${img}`)
+                    fetch(`/love-site/picture/${img}`)
                         .then(response => {
                             if (!response.ok) throw new Error(`Image ${img} not found`);
                             console.log(`Image ${img} loaded successfully`);
@@ -1161,8 +1167,25 @@
                 });
             }
 
-            // 页面加载时检查资源
-            window.addEventListener('load', checkResources);
+            // 添加到你的 JavaScript 代码中
+            window.addEventListener('load', function() {
+                // 测试音乐文件
+                const audio = new Audio(`/love-site/music/${encodeURIComponent('This Could Be You.mp3')}`);
+                audio.addEventListener('error', function() {
+                    console.error('音乐文件加载失败');
+                });
+                audio.addEventListener('loadeddata', function() {
+                    console.log('音乐文件加载成功');
+                });
+
+                // 测试图片文件
+                ['1.jpg', '2.jpg'].forEach(img => {
+                    const image = new Image();
+                    image.src = `/love-site/picture/${img}`;
+                    image.onload = () => console.log(`图片 ${img} 加载成功`);
+                    image.onerror = () => console.error(`图片 ${img} 加载失败`);
+                });
+            });
         </script>
     </div>
 </body>
